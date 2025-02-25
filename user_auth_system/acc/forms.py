@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from django import forms
+from .models import Blog
+
 
 class SignupForm(UserCreationForm):
     profile_picture = forms.ImageField(required=False)
@@ -27,3 +29,13 @@ class SignupForm(UserCreationForm):
         if not pincode.isdigit() or len(pincode) != 6:
             raise ValidationError("Pincode must be a 6-digit number.")
         return pincode
+
+
+class BlogForm(forms.ModelForm):
+    class Meta:
+        model = Blog
+        fields = ['title', 'image', 'category', 'summary', 'content', 'is_draft']
+        widgets = {
+            'summary': forms.Textarea(attrs={'rows': 3}),
+            'content': forms.Textarea(attrs={'rows': 5}),
+        }

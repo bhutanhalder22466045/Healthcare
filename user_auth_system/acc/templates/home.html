@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,12 +11,7 @@
             background: url('https://wallpaperaccess.com/full/624185.jpg') no-repeat center center fixed;
             background-size: cover;
         }
-        .navbar {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-        .navbar-brand, .nav-link {
-            color: white !important;
-        }
+
         .lead{
         font-weight: bold;
         .home-container {
@@ -33,13 +29,21 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg navbar-dark text-light bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="/">Healthcare System</a>
-        <div class="collapse navbar-collapse">
+        <a class="navbar-brand" href="{% url 'home' %}">Healthcare System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                    {% if user.user_type == "doctor" %}
+                        <a href="{% url 'create_blog' %}" class="btn text-light">Create Blog</a>
+                    {% else %}
+                        <a href="{% url 'blogs_list' %}" class="btn text-light">View Doctor's Blog</a>
+                    {% endif %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}All Blogs{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center">Healthcare Blogs</h2>
+
+    {% for category, blogs in categorized_blogs.items %}
+        <h3 class="mt-4">{{ category }}</h3>
+
+        {% if blogs %}
+            <div class="row">
+                {% for blog in blogs %}
+                    <div class="col-md-4">
+                        <div class="card mb-3">
+                            <img src="{{ blog.image.url }}" class="card-img-top" alt="Blog Image">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ blog.title }}</h5>
+                                <p class="card-text">{{ blog.truncated_summary }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted">No posts available in this category.</p>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}
