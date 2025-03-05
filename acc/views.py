@@ -11,21 +11,47 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import datetime
-
+import os
+import datetime
+import pickle
+from google.auth.transport.requests import Request
 
 User = get_user_model()
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 
 
+
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
+
+
 def authenticate_google_calendar():
-    flow = InstalledAppFlow.from_client_secrets_file(
-        "credentials.json", SCOPES
-    )
-    creds = flow.run_local_server(port=0)
+    creds = None
+    token_path = "token.pickle"  # Store the authenticated token here
+
+    # Load saved credentials if available
+    if os.path.exists(token_path):
+        with open(token_path, "rb") as token:
+            creds = pickle.load(token)
+
+    # If there are no valid credentials, authenticate
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "credentials.json", SCOPES  # Provide the path to client_secret.json
+            )
+            creds = flow.run_local_server(port=0)
+
+        # Save the credentials for future use
+        with open(token_path, "wb") as token:
+            pickle.dump(creds, token)
+
     return creds
 
 
+"""
 @login_required
 def book_appointment(request, doctor_id):
     doctor = get_object_or_404(CustomUser, id=doctor_id, user_type="doctor")
@@ -70,6 +96,46 @@ def book_appointment(request, doctor_id):
         form = AppointmentForm()
 
     return render(request, "book_appointment.html", {"form": form, "doctor": doctor})
+
+"""
+@login_required
+def book_appointment(request, doctor_id):
+    doctor = get_object_or_404(CustomUser, id=doctor_id, user_type="doctor")
+
+    if request.method == 'POST':
+        form = AppointmentForm(request.POST)
+        if form.is_valid():
+            appointment = form.save(commit=False)
+            appointment.patient = request.user
+            appointment.doctor = doctor
+            appointment.save()
+
+            # ✅ Authenticate and create Google Calendar event
+            creds = authenticate_google_calendar()
+            service = build("calendar", "v3", credentials=creds)
+
+            start_datetime = datetime.datetime.combine(appointment.appointment_date, appointment.start_time)
+            end_datetime = start_datetime + datetime.timedelta(minutes=45)
+
+            event = {
+                "summary": f"Appointment with Dr. {doctor.first_name} {doctor.last_name}",
+                "description": f"Patient: {request.user.first_name} {request.user.last_name}",
+                "start": {"dateTime": start_datetime.isoformat(), "timeZone": "UTC"},
+                "end": {"dateTime": end_datetime.isoformat(), "timeZone": "UTC"},
+                "attendees": [{"email": doctor.email}, {"email": request.user.email}],
+            }
+
+            event = service.events().insert(calendarId="primary", body=event).execute()
+
+            # Save Google Event ID
+            appointment.google_event_id = event.get("id")
+            appointment.save()
+
+            return redirect('appointment_success', appointment_id=appointment.id)
+    else:
+        form = AppointmentForm()
+
+    return render(request, 'book_appointment.html', {'form': form, 'doctor': doctor})
 
 
 @login_required
