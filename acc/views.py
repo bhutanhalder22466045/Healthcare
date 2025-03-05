@@ -63,7 +63,7 @@ def book_appointment(request, doctor_id):
             appointment.doctor = doctor
             appointment.save()
 
-            # ✅ Authenticate and create Google Calendar event
+            
             creds = authenticate_google_calendar()
             service = build("calendar", "v3", credentials=creds)
 
@@ -80,7 +80,6 @@ def book_appointment(request, doctor_id):
 
             event = service.events().insert(calendarId="primary", body=event).execute()
 
-            # Save Google Event ID
             appointment.google_event_id = event.get("id")
             appointment.save()
 
@@ -130,7 +129,7 @@ def my_blogs(request):
     return render(request, 'my_blogs.html', {'blogs': blogs})
 
 
-# List of Blogs (Patients View - Only Published Blogs)
+
 def blog_list(request):
     categorized_blogs = {}
     categories = ['Mental Health', 'Heart Disease', 'Covid19', 'Immunization']
