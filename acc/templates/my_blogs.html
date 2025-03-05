@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}My Blogs{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">My Blog Posts</h2>
+    <div class="list-group">
+        {% for blog in blogs %}
+        <div class="list-group-item">
+            <h4>{{ blog.title }}</h4>
+            <p><strong>Category:</strong> {{ blog.category }}</p>
+            <img class="w-25" src="{{ blog.image.url }}" class="card-img-top" alt="Blog Image">
+            <p><strong>Summary:</strong> {{ blog.truncated_summary }}</p>
+            <p><strong>Status:</strong> {% if blog.is_draft %} <span class="text-danger">Draft</span> {% else %} <span class="text-success">Published</span> {% endif %}</p>
+        </div>
+        {% endfor %}
+        {% for blog in blogs %}
+            <div class="blog-card">
+                <h3>{{ blog.title }}</h3>
+                <img src="{{ blog.image.url }}" alt="{{ blog.title }}" style="width:100px; height:auto;">
+                <p>{{ blog.summary }}</p>
+
+                <!-- Delete Button -->
+                <form action="{% url 'delete_blog' blog.id %}" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}

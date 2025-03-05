@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Latest Blog Posts</h2>
+    {% for category, blogs in categorized_blogs.items %}
+        <h3>{{ category }}</h3>
+        {% if blogs %}
+            <div class="row">
+                {% for blog in blogs %}
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="{{ blog.image.url }}" class="card-img-top" alt="Blog Image">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ blog.title }}</h5>
+                                <p class="card-text">{{ blog.truncated_summary }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No posts in this category.</p>
+        {% endif %}
+        <hr>
+    {% endfor %}
+</div>
+{% endblock %}

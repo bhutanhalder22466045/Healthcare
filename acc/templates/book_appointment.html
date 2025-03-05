@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Book an Appointment with Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Confirm Appointment</button>
+</form>
+
+{% endblock %}

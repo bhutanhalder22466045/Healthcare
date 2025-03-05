@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Available Doctors</h2>
+<style>
+    .doctor-card {
+        margin-bottom: 20px;  /* Adds space below each doctor card */
+        padding: 15px;        /* Adds padding inside each card */
+        border-bottom: 2px solid #ddd; /* Adds a separator line */
+        display: flex;
+        align-items: center;  /* Aligns image and text properly */
+        gap: 15px;            /* Adds space between image and text */
+    }
+
+    .doctor-card img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 10px;  /* Optional: Adds rounded corners */
+    }
+
+    .doctor-card h3 {
+        margin: 0;
+    }
+
+    .doctor-card .btn {
+        margin-top: 10px; /* Adds space between text and button */
+    }
+</style>
+{% for doctor in doctors %}
+    <div class="doctor-card">
+        <img src="{{ doctor.profile_picture.url }}" alt="Profile Picture" style="width: 100px; height: 100px; object-fit: cover;">
+        <h3>{{ doctor.first_name }} {{ doctor.last_name }}</h3>
+        <a href="{% url 'book_appointment' doctor.id %}" class="btn btn-primary">Book Appointment</a>
+        <br>
+    </div>
+{% endfor %}
+
+{% endblock %}
