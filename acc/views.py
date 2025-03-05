@@ -51,53 +51,6 @@ def authenticate_google_calendar():
     return creds
 
 
-"""
-@login_required
-def book_appointment(request, doctor_id):
-    doctor = get_object_or_404(CustomUser, id=doctor_id, user_type="doctor")
-
-    if request.method == "POST":
-        form = AppointmentForm(request.POST)
-        if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.patient = request.user
-            appointment.doctor = doctor
-            appointment.save()
-
-            # Extract date and time safely
-            date = form.cleaned_data.get("appointment_date")
-            start_time = form.cleaned_data.get("start_time")
-            if not date or not start_time:
-                return render(request, "book_appointment.html", {"form": form, "doctor": doctor, "error": "Missing date or time"})
-
-            start_datetime = datetime.datetime.combine(date, start_time)
-            end_datetime = start_datetime + datetime.timedelta(minutes=45)
-
-            # Google Calendar Integration
-            creds = authenticate_google_calendar()
-            service = build("calendar", "v3", credentials=creds)
-
-            event = {
-                "summary": f"Appointment with Dr. {doctor.first_name} {doctor.last_name}",
-                "description": f"Patient: {request.user.first_name} {request.user.last_name}",
-                "start": {"dateTime": start_datetime.isoformat(), "timeZone": "UTC"},
-                "end": {"dateTime": end_datetime.isoformat(), "timeZone": "UTC"},
-                "attendees": [{"email": doctor.email}, {"email": request.user.email}],
-            }
-
-            calendar_event = service.events().insert(calendarId="primary", body=event).execute()
-
-            appointment.google_event_id = calendar_event["id"]
-            appointment.save()
-
-            return redirect("appointment_success", appointment_id=appointment.id)
-
-    else:
-        form = AppointmentForm()
-
-    return render(request, "book_appointment.html", {"form": form, "doctor": doctor})
-
-"""
 @login_required
 def book_appointment(request, doctor_id):
     doctor = get_object_or_404(CustomUser, id=doctor_id, user_type="doctor")
