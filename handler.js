@@ -16,12 +16,12 @@ module.exports.sendEmail = async (event) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail', // You can configure other email services
       auth: {
-        user: 'official.test.mail.13@gmail.com', // Replace with your email
-        pass: 'lpgqfawrqhxpeixc', // Replace with an app password or use environment variables
+        user: 'official.test.mail.13@gmail.com', 
+        pass: 'lpgqfawrqhxpeixc', 
       },
     });
 
-    // Define email options
+   
     const mailOptions = {
       from: 'official.test.mail.13@gmail.com',
       to: ['bhbagh13@gmail.com'],
@@ -29,7 +29,7 @@ module.exports.sendEmail = async (event) => {
       text: body_text,
     };
 
-    // Send email
+
     await transporter.sendMail(mailOptions);
 
     return {
