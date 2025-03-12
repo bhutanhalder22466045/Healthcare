@@ -2,7 +2,7 @@ service: email-api
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: python3.10  
   region: us-east-1
 
 plugins:
@@ -10,7 +10,7 @@ plugins:
 
 functions:
   sendEmail:
-    handler: handler.sendEmail
+    handler: handler.send_email  
     events:
       - http:
           path: send-email
